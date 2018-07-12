@@ -43,7 +43,11 @@ namespace AFSDKTest
 
         static void PrintElementTemplate(AFDatabase database)
         {
-            Console.WriteLine("Print Element Template Count: {0}", database.Elements.Count);
+            Console.WriteLine("Print Element Template Count: {0}", database.ElementTemplates.Count);
+            foreach (AFElementTemplate elementTemplates in database.ElementTemplates)
+            {
+                Console.WriteLine(" {0}", elementTemplates);
+            }
         }
     }
 }
