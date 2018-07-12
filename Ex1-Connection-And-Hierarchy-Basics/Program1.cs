@@ -25,14 +25,14 @@ namespace Ex1_Connection_And_Hierarchy_Basics
         static void Main(string[] args)
         {
 
-            AFDatabase database = GetDatabase("PISRV01", "Green Power Company");
+            AFDatabase database = GetDatabase("PU-PIAFAPPDEV", "Green Power Company");
 
             PrintRootElements(database);
-            PrintElementTemplates(database);
-            PrintAttributeTemplates(database, "MeterAdvanced");
-            PrintEnergyUOMs(database.PISystem);
-            PrintEnumerationSets(database);
-            PrintCategories(database);
+            //PrintElementTemplates(database);
+            //PrintAttributeTemplates(database, "MeterAdvanced");
+            //PrintEnergyUOMs(database.PISystem);
+            //PrintEnumerationSets(database);
+            //PrintCategories(database);
 
             Console.WriteLine("Press ENTER key to close");
             Console.ReadLine();

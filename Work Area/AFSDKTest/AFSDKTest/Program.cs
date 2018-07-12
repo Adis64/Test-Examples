@@ -13,9 +13,12 @@ namespace AFSDKTest
     {
         static void Main(string[] args)
         {
-            AFDatabase database = GetDatabase("PU-PIAFAPPDEV", "Green Power Company");
+            AFDatabase database = GetDatabase("PU-PIAFAPPDEV", "DevTest");
+            //PrintRootElements(database);
+            PrintElementTemplate(database);
 
-
+            Console.WriteLine("Press ENTER key to close");
+            Console.ReadLine();
         }
 
         static AFDatabase GetDatabase(string server, string database)
@@ -29,12 +32,18 @@ namespace AFSDKTest
         static void PrintRootElements(AFDatabase database)
         {
             Console.WriteLine("Print Root Elements: {0}", database.Elements.Count);
-            foreach (AFElement element in database.Elements)
+            AFElements afEl = database.Elements;
+            foreach (AFElement element in afEl)
             {
                 Console.WriteLine("  {0}", element.Name);
             }
 
             Console.WriteLine();
+        }
+
+        static void PrintElementTemplate(AFDatabase database)
+        {
+            Console.WriteLine("Print Element Template Count: {0}", database.Elements.Count);
         }
     }
 }
