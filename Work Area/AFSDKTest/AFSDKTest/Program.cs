@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using OSIsoft.AF;
 using OSIsoft.AF.Asset;
+using OSIsoft.AF.Search;
 using OSIsoft.AF.UnitsOfMeasure;
 
 namespace AFSDKTest
@@ -15,7 +16,10 @@ namespace AFSDKTest
         {
             AFDatabase database = GetDatabase("PU-PIAFAPPDEV", "DevTest");
             //PrintRootElements(database);
-            PrintElementTemplate(database);
+            //PrintElementTemplate(database);
+            //PrintSearchResults(database,"Meter");
+            //PrintSearchByTemplate(database, "MeterBasic");
+            FindMetersAboveAverage(database, 300);
 
             Console.WriteLine("Press ENTER key to close");
             Console.ReadLine();
@@ -43,11 +47,61 @@ namespace AFSDKTest
 
         static void PrintElementTemplate(AFDatabase database)
         {
-            Console.WriteLine("Print Element Template Count: {0}", database.ElementTemplates.Count);
-            foreach (AFElementTemplate elementTemplates in database.ElementTemplates)
+            Console.WriteLine("Print Elements: {0}", database.ElementTemplates.Count);
+            foreach (AFElementTemplate elementtemplate in database.ElementTemplates)
             {
-                Console.WriteLine(" {0}", elementTemplates);
+                Console.WriteLine(" {0}", elementtemplate.Name);
             }
         }
+
+
+        static void PrintSearchResults(AFDatabase database, string SearchString)
+        {
+            Console.WriteLine("Query String is : {0}", SearchString);
+
+            var QueryString = string.Format("*{0}*", SearchString);
+            //var QueryString = SearchString;
+
+            using (AFElementSearch search = new AFElementSearch(database, "My Search", QueryString))
+            {
+                search.CacheTimeout = TimeSpan.FromMinutes(5);
+                foreach (AFElement element in search.FindElements())
+                {
+                    Console.WriteLine("Element Name: {0}, Template: {1} , Categories: {2}",element.Name,element.Template,element.CategoriesString);
+                }
+            }
+
+        }
+
+        static void PrintSearchByTemplate(AFDatabase database, string SearchTemplate)
+        {
+            Console.WriteLine("Query String is : {0}", SearchTemplate);
+
+            var QueryString = string.Format("TemplateName: {0}", SearchTemplate);
+            //var QueryString = SearchString;
+
+            using (AFElementSearch search = new AFElementSearch(database, "My Template Search", QueryString))
+            {
+                search.CacheTimeout = TimeSpan.FromMinutes(5);
+                foreach (AFElement element in search.FindElements())
+                {
+                    Console.WriteLine("Element Name: {0}, Template: {1} , Categories: {2}", element.Name, element.Template, element.CategoriesString);
+                }
+            }
+
+        }
+
+        static void FindMetersAboveAverage(AFDatabase database, double AverageVal)
+        {
+            Console.WriteLine("Average limit is : {0}", AverageVal);
+
+            AFElementSearch elesearch = new AFElementSearch(database, "Find Average Above Limit", "*Meter*");
+
+            foreach(AFElement ele in elesearch.FindElements()
+            {   
+
+            }
+        }
+
     }
 }

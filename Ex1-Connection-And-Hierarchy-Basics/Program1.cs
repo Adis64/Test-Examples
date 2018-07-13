@@ -27,8 +27,8 @@ namespace Ex1_Connection_And_Hierarchy_Basics
 
             AFDatabase database = GetDatabase("PU-PIAFAPPDEV", "Green Power Company");
 
-            PrintRootElements(database);
-            //PrintElementTemplates(database);
+            //PrintRootElements(database);
+            PrintElementTemplates(database);
             //PrintAttributeTemplates(database, "MeterAdvanced");
             //PrintEnergyUOMs(database.PISystem);
             //PrintEnumerationSets(database);
@@ -59,7 +59,11 @@ namespace Ex1_Connection_And_Hierarchy_Basics
 
         static void PrintElementTemplates(AFDatabase database)
         {
-            /// Your code here
+            Console.WriteLine("Print Elements: {0}",database.ElementTemplates.Count);
+            foreach (AFElementTemplate elementtemplate in database.ElementTemplates)
+            {
+                Console.WriteLine(" {0}", elementtemplate.Name);
+            }
         }
 
         static void PrintAttributeTemplates(AFDatabase database, string elemTempName)
