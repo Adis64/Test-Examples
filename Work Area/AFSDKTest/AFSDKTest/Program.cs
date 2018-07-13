@@ -14,7 +14,7 @@ namespace AFSDKTest
     {
         static void Main(string[] args)
         {
-            AFDatabase database = GetDatabase("PU-PIAFAPPDEV", "DevTest");
+            AFDatabase database = GetDatabase("pisrv01", "Green Power Company"); //GetDatabase("PU-PIAFAPPDEV", "DevTest");
             //PrintRootElements(database);
             //PrintElementTemplate(database);
             //PrintSearchResults(database,"Meter");
