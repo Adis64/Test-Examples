@@ -94,12 +94,15 @@ namespace AFSDKTest
         static void FindMetersAboveAverage(AFDatabase database, double AverageVal)
         {
             Console.WriteLine("Average limit is : {0}", AverageVal);
+            string templateName = "MeterBasic";
+            string attributeName = "Energy Usage";
 
-            AFElementSearch elesearch = new AFElementSearch(database, "Find Average Above Limit", "*Meter*");
 
-            foreach(AFElement ele in elesearch.FindElements()
-            {   
+            AFElementSearch elesearch = new AFElementSearch(database, "Find Average Above Limit", string.Format("template:\"{0}\" \"|{1}\":>{2}", templateName, attributeName, AverageVal));
 
+            foreach(AFElement ele in elesearch.FindElements())
+            {
+                Console.WriteLine("Element Name: {0}, Template: {1} , Categories: {2}", ele.Name, ele.Template, ele.CategoriesString);
             }
         }
 
