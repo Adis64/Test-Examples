@@ -24,7 +24,10 @@ namespace AFSDKTest
             //FindMetersAboveAverage(database, 300);
             //PrintHistorical(database, "Meter001", "*-2h", "*");
             //PrintInterpolated(database, "Meter001", "*-2h", "*", TimeSpan.FromSeconds(10));
-            PrintHourlyAverage(database, "Meter001", "*-2h", "*");
+            //PrintHourlyAverage(database, "Meter001", "*-2h", "*");
+            //CreateFeederRootElement(database);
+            //CreateFeederElements(database,"Feeder005");
+            CreateWeakReference(database);
 
             Console.WriteLine("Press ENTER key to close");
             Console.ReadLine();
@@ -161,6 +164,65 @@ namespace AFSDKTest
             {
                 Console.WriteLine("Timestamp: {0:yyyy-MM-dd HH\\h}, Value: {1:0.00}  {2}", val.Timestamp.LocalTime, val.Value, val.UOM.Abbreviation);
             }
+        }
+
+        static void CreateFeederRootElement(AFDatabase database)
+        {
+            Console.WriteLine("Creating the Feeders root element");
+            if (database.Elements.Contains("Feeders"))
+                return;
+
+            database.Elements.Add("Feeders");
+            database.CheckIn();
+        }
+
+        static void CreateFeederElements(AFDatabase database, String FeederName)
+        {
+            Console.WriteLine("Creating new element using feeder template..");
+
+            AFElementTemplate template = database.ElementTemplates["Feeders"];
+
+            AFElement feeder = database.Elements["Feeders"];
+
+
+            if (template == null || feeder == null)
+            {
+                Console.WriteLine("Feeder template and parent missing");
+                return;
+            }
+
+            if (feeder.Elements.Contains(FeederName)) return;
+            AFElement feeder01 = feeder.Elements.Add(FeederName, template);
+
+            AFAttribute city = feeder01.Attributes["City"];
+            if (city != null) city.SetValue(new AFValue("London"));
+
+            AFAttribute power = feeder01.Attributes["Power"];
+            power.ConfigString = @"\\PU-PIDARCDEV01\SINUSOID";
+
+            if (database.IsDirty)
+                database.CheckIn();
+        }
+
+        static void CreateWeakReference(AFDatabase database)
+        {
+            Console.WriteLine("Creating a weak referenc of the Feeder01 under London");
+
+            AFReferenceType weakRefType = database.ReferenceTypes["Weak Reference"];
+
+            AFElement london = database.Elements["Geographical Locations"].Elements["London"];
+            AFElement feeder = database.Elements["Feeders"].Elements["Feeder005"];
+
+            if (feeder != null || london != null)
+            {
+                if (!london.Elements.Contains(feeder))
+                    london.Elements.Add(feeder, weakRefType);
+            }
+
+
+            if (london.IsDirty)
+                london.CheckIn();
+
         }
     }
 }
