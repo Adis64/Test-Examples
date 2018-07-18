@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using OSIsoft.AF;
+using OSIsoft.AF.Data;
+using OSIsoft.AF.Time;
 using OSIsoft.AF.Asset;
 using OSIsoft.AF.Search;
 using OSIsoft.AF.UnitsOfMeasure;
@@ -19,7 +21,10 @@ namespace AFSDKTest
             //PrintElementTemplate(database);
             //PrintSearchResults(database,"Meter");
             //PrintSearchByTemplate(database, "MeterBasic");
-            FindMetersAboveAverage(database, 300);
+            //FindMetersAboveAverage(database, 300);
+            //PrintHistorical(database, "Meter001", "*-2h", "*");
+            //PrintInterpolated(database, "Meter001", "*-2h", "*", TimeSpan.FromSeconds(10));
+            PrintHourlyAverage(database, "Meter001", "*-2h", "*");
 
             Console.WriteLine("Press ENTER key to close");
             Console.ReadLine();
@@ -106,5 +111,56 @@ namespace AFSDKTest
             }
         }
 
+        static void PrintHistorical(AFDatabase database, string meterName, string startTime, string endTime)
+        {
+            Console.WriteLine("Print Interpolated Values - Meter: {0}, Start: {1}, End: {2}", meterName, startTime, endTime);
+
+            AFAttribute attr = AFAttribute.FindAttribute(@"\Meters\" + meterName + @"|Energy Usage", database);
+
+            AFTime start = new AFTime(startTime);
+            AFTime end = new AFTime(endTime);
+            AFTimeRange timeRange = new AFTimeRange(start, end);
+
+            AFValues vals = attr.Data.RecordedValues(timeRange: timeRange, boundaryType: AFBoundaryType.Inside, desiredUOM: null, filterExpression: null, includeFilteredValues: false);
+
+            foreach (AFValue val in vals)
+            {
+                Console.WriteLine("Timestamp (UTC): {0}, value (kJ): {1}", val.Timestamp.UtcTime, val.Value);
+            }
+        }
+
+        static void PrintInterpolated(AFDatabase database, string meterName, string start, string end, TimeSpan interval)
+        {
+            AFTime startTime = new AFTime(start);
+            AFTime endTime = new AFTime(end);
+            AFTimeRange timeRange = new AFTimeRange(startTime, endTime);
+
+            AFAttribute att = AFAttribute.FindAttribute(@"\Meters\" + meterName + @"|Energy Usage", database);
+            AFTimeSpan intervalNew = new AFTimeSpan(interval);
+            AFValues values = att.Data.InterpolatedValues(timeRange: timeRange, interval: intervalNew, desiredUOM: null, filterExpression: null, includeFilteredValues: false);
+
+        }
+
+        static void PrintHourlyAverage(AFDatabase database, string meterName, string start, string end)
+        {
+            Console.WriteLine("Print Interpolated Values - Meter: {0}, Start: {1}, End: {2}", meterName, start, end);
+
+            string abc = @"\Meters\" + meterName + @"|Energy Usage";
+
+            AFAttribute attr = AFAttribute.FindAttribute(@"\Meters\" + meterName + @"|Energy Usage", database);
+
+            AFTime startTime = new AFTime(start);
+            AFTime endTime = new AFTime(end);
+            AFTimeRange timeRange = new AFTimeRange(startTime, endTime);
+
+
+            IDictionary<AFSummaryTypes, AFValues> vals = attr.Data.Summaries(timeRange: timeRange, summaryDuration: new AFTimeSpan(TimeSpan.FromHours(1)), summaryType: AFSummaryTypes.Average, calcBasis: AFCalculationBasis.TimeWeighted, timeType: AFTimestampCalculation.EarliestTime);
+
+
+            foreach (AFValue val in vals[AFSummaryTypes.Average])
+            {
+                Console.WriteLine("Timestamp: {0:yyyy-MM-dd HH\\h}, Value: {1:0.00}  {2}", val.Timestamp.LocalTime, val.Value, val.UOM.Abbreviation);
+            }
+        }
     }
 }
